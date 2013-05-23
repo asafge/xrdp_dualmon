@@ -256,6 +256,7 @@ session_start_sessvc(int xpid, int wmpid, long data, char *username, int display
     list_add_item(sessvc_params, (long)g_strdup(wmpid_str));
     list_add_item(sessvc_params, 0); /* mandatory */
 
+    // geva 6
     env_set_user(username, 0, display);
 
     /* executing sessvc */
@@ -703,6 +704,44 @@ session_reconnect_fork(int display, char *username)
 }
 
 /******************************************************************************/
+#define DUALMON_RATIO 2.0
+int APP_CC
+xrdp_handle_dualmon(int width, int height, int display, char* username)
+{
+	double ratio = ((double)width) / ((double)height);
+	env_set_user(username, 0, display);
+	char fx_path[256];
+	g_snprintf(fx_path, 255, "/home/%s/.fakexinerama", username);
+
+	log_message(LOG_LEVEL_INFO, "Checking dualmon configuration, ratio is %d.", ratio);
+
+	if (ratio > DUALMON_RATIO)
+	{
+	    int fd = g_file_open(fx_path);
+
+		if (fd != -1)
+		{
+			width = width / 2;
+
+			char fx_data[256];
+			g_sprintf(fx_data, "2\n0 0 %d %d\n%d 0 %d %d\n\0", width, height, width, width, height);									// Two monitors
+			g_file_write(fd, fx_data, g_strlen(fx_data));
+			g_file_close(fd);
+			log_message(LOG_LEVEL_INFO, "Created fake xinerama configuration file for %s.", username);
+		}
+		else
+		{
+			log_message(LOG_LEVEL_ERROR, "Failed creating fake xinerama file.");
+		}
+	}
+	else
+	{
+		g_file_delete(fx_path);
+	}
+	return 0;
+}
+
+/******************************************************************************/
 /* called by a worker thread, ask the main thread to call session_sync_start
    and wait till done */
 int DEFAULT_CC
@@ -733,6 +772,9 @@ session_start(int width, int height, int bpp, char *username, char *password,
     lock_sync_sem_acquire();
     /* read result(display) from shared var */
     display = g_sync_result;
+
+    xrdp_handle_dualmon(width, height, display, username);
+
     /* unlock mutex */
     lock_sync_release();
     return display;
