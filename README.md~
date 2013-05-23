@@ -22,7 +22,7 @@ Installation
       * Run gcc -O2 -Wall Xinerama.c -fPIC -o libXinerama.so.1.0.0 -shared
       * Replace /usr/lib/libXinerama.so.1.0.0 with the new file you've just created.
 
-Some other technical details
+Technical details
 -------------------------------
   * Support dualmon RDP experience to an xrdp server is achieved by "faking" two virtual screens.
   * When a user connects to an xrdp server using "/span", a wider window is sent to the xrdp server in client_info.
