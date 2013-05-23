@@ -3,12 +3,13 @@ xrdp_dualmon
 
 About
 -------------------------------
-  A *workaround* solution to enable dualmon in the xrdp server when using Sesman and X11rdp. Based on the following:
+  A *workaround* solution to enable dualmon in the xrdp server when using Sesman and X11rdp.
+  Usage: Pass the "/span" argument when RDPing to the xrdp server. Based on the following:
   * xrdp project - https://github.com/FreeRDP/xrdp
   * Xinerama - http://sourceforge.net/projects/xinerama
   * fake xinerama - http://home.kde.org/~seli/fakexinerama
 
-  Usage: Pass the "/span" argument when RDPing to the xrdp server.
+
 
 Prerequisites 
 -------------------------------
