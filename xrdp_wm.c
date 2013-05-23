@@ -522,6 +522,35 @@ xrdp_wm_load_static_pointers(struct xrdp_wm *self)
 }
 
 /*****************************************************************************/
+#define DUALMON_RATIO 2.0
+int APP_CC
+xrdp_handle_dualmon(struct xrdp_wm *self)
+{
+	double ratio = ((double)self->client_info->width) / ((double)self->client_info->height);
+	if (ratio > DUALMON_RATIO)
+	{
+		char fx_path[256];
+		g_snprintf(fx_path, 255, "~/.fakexinerama");
+	    	int fd = g_file_open(fx_path);
+
+		if (fd != -1)
+		{
+			int nw = self->client_info->width / 2;
+			int nh = self->client_info->height;
+
+			char fx_data[256];
+			g_sprintf(fx_data, "2\n");			// Two monitors
+			g_sprintf(fx_data, "0 0 %d %d", nw, nh);	// First monitor (X Y W H)
+			g_sprintf(fx_data, "%d 0 %d %d", nw, nw, nh);	// Second monitor (X Y W H)
+
+			g_file_write(fd, fx_data, 255);
+			g_file_close(fd);
+		}
+	}
+	return 0;
+}
+
+/*****************************************************************************/
 int APP_CC
 xrdp_wm_init(struct xrdp_wm *self)
 {
@@ -541,6 +570,8 @@ xrdp_wm_init(struct xrdp_wm *self)
 
     if (self->session->client_info->rdp_autologin || (autorun_name[0] != 0))
     {
+   	xrdp_handle_dualmon(self->session->client_info);
+
         g_snprintf(cfg_file, 255, "%s/xrdp.ini", XRDP_CFG_PATH);
         fd = g_file_open(cfg_file); /* xrdp.ini */
 
