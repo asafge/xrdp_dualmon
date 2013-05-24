@@ -4,7 +4,8 @@ xrdp_dualmon
 About
 -------------------------------
   A *workaround* solution to enable dualmon in the xrdp server when using Sesman and X11rdp.
-  Usage: Pass the "/span" argument when RDPing to the xrdp server. Based on the following:
+  This is a *true* multimon solution, every display is independent and can maximize x-windows to fit fullscreen.
+  Usage: Pass the "/span" argument when RDPing to the xrdp server. The solution is based on the following:
   * xrdp project - https://github.com/FreeRDP/xrdp
   * Xinerama - http://sourceforge.net/projects/xinerama
   * fake xinerama - http://home.kde.org/~seli/fakexinerama
