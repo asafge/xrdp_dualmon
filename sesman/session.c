@@ -586,6 +586,9 @@ session_start_fork(int width, int height, int bpp, char *username,
                 }
                 else if (type == SESMAN_SESSION_TYPE_XRDP)
                 {
+                    // Dualmon for x11RDP
+                    xrdp_handle_dualmon(width, height, display);
+
                     xserver_params = list_create();
                     xserver_params->auto_free = 1;
                     /* these are the must have parameters */
@@ -704,6 +707,42 @@ session_reconnect_fork(int display, char *username)
     }
 
     return display;
+}
+
+/******************************************************************************/
+#define DUALMON_RATIO 2.0
+int APP_CC
+xrdp_handle_dualmon(int width, int height, int display)
+{
+	double ratio = ((double)width) / ((double)height);
+	char fx_path[256];
+	g_snprintf(fx_path, 255, "%s/.fakexinerama", g_getenv("HOME"));
+
+	log_message(LOG_LEVEL_INFO, "Checking dualmon configuration, ratio is %f", ratio);
+	if (ratio > DUALMON_RATIO)
+	{
+		int fd = g_file_open(fx_path);
+		if (fd != -1)
+		{
+			width = width / 2;
+
+			char fx_data[256];
+			g_sprintf(fx_data, "2\n0 0 %d %d\n%d 0 %d %d\n\0", width, height, width, width, height);
+			g_file_write(fd, fx_data, g_strlen(fx_data));
+			g_file_close(fd);
+
+			log_message(LOG_LEVEL_INFO, "Created fake xinerama configuration file in %s.", fx_path);
+		}
+		else
+		{
+			log_message(LOG_LEVEL_ERROR, "Failed creating fake xinerama file.");
+		}
+	}
+	else
+	{
+		g_file_delete(fx_path);
+	}
+	return 0;
 }
 
 /******************************************************************************/
