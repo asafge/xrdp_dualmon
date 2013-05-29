@@ -17,6 +17,9 @@ Prerequisites
   * Screens are assumed to have the same resolution.
   * Only two screens are supported (this is what I needed), but this could easily be changed.
   * Dualmon ratio "threshold" is a const which is also tweakable (explained in detail later).
+  * Update (29/05/2013) - It appears as if there's a resolution limitation, both screens' width combined should not exceed 2800px.
+      * That said, I got some good feedback from several users on an xrdp server - looks like it works.
+      * 
 
 Installation
 -------------------------------
